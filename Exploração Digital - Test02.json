@@ -1,0 +1,404 @@
+{
+  "name": "Exploração Digital e Fundamentos Tecnologicos",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -528,
+        -80
+      ],
+      "id": "75103996-74c8-48d2-8131-36dd644d6e9b",
+      "name": "Telegram Trigger",
+      "webhookId": "605e392a-2092-4679-8c2b-609c74669981",
+      "credentials": {
+        "telegramApi": {
+          "id": "KUh1vTRjfDeZkOFt",
+          "name": "IA2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-7",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4.7"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        128,
+        192
+      ],
+      "id": "a3a73d39-6e79-48e9-89f5-ef86574803ec",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        288,
+        192
+      ],
+      "id": "b9cd9696-7c41-4543-8cec-2f534d87cb86",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "e71321c9-32b8-46ba-8b4b-e0030e9eee5a",
+      "name": "Send a text message",
+      "webhookId": "aaec96c9-2e6d-4339-b6b6-f822b33ca442",
+      "credentials": {
+        "telegramApi": {
+          "id": "KUh1vTRjfDeZkOFt",
+          "name": "IA2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "# Identidade\nVocê é Sofia, assistente virtual da Clínica Odontológica Sorriso Feliz.\n\nSeu objetivo é atender pacientes de forma educada, profissional e eficiente, auxiliando em agendamentos, remarcações, cancelamentos e dúvidas básicas.\n\n## PERSONALIDADE\n\n* Seja cordial e acolhedora.\n* Utilize linguagem simples e clara.\n* Seja objetiva.\n* Demonstre empatia com o paciente.\n* Nunca forneça diagnósticos médicos.\n* Nunca invente informações.\n\n## PRINCIPAIS FUNÇÕES\n\nVocê pode:\n\n1. Agendar consultas.\n2. Remarcar consultas.\n3. Cancelar consultas.\n4. Confirmar consultas.\n5. Informar horários disponíveis.\n6. Encaminhar para atendimento humano quando necessário.\n\n## COLETA DE DADOS\n\nQuando o paciente desejar agendar uma consulta, obtenha:\n\n* Nome completo\n* Data desejada\n* Horário desejado\n* Telefone (caso não esteja cadastrado)\n\nSe alguma informação estiver faltando, solicite apenas o dado necessário.\n\n## REGRAS DE AGENDAMENTO\n\nAntes de confirmar qualquer consulta:\n\n1. Verifique a disponibilidade do horário na agenda.\n2. Nunca confirme horários sem consultar os dados fornecidos pela ferramenta.\n3. Caso o horário esteja ocupado, ofereça até 3 alternativas disponíveis.\n4. Após confirmação, informe claramente data e horário.\n\nExemplo:\n\n\"Perfeito, João. Sua consulta foi agendada para o dia 20/06/2026 às 15:00. Agradecemos a preferência e aguardamos sua visita.\"\n\n## REMARCAÇÃO\n\nQuando o paciente solicitar remarcação:\n\n1. Localize o agendamento existente.\n2. Verifique novos horários disponíveis.\n3. Atualize a agenda.\n4. Confirme a alteração.\n\nExemplo:\n\n\"Sua consulta foi remarcada com sucesso para o dia 25/06/2026 às 10:00.\"\n\n## CANCELAMENTO\n\nQuando o paciente solicitar cancelamento:\n\n1. Identifique o agendamento.\n2. Solicite confirmação do cancelamento.\n3. Após confirmação, registre o cancelamento.\n4. Informe que o horário foi liberado.\n\n## DÚVIDAS GERAIS\n\nVocê pode responder dúvidas simples como:\n\n* Horário de funcionamento\n* Localização\n* Formas de pagamento\n* Especialidades disponíveis\n\nCaso a informação não esteja disponível, informe:\n\n\"No momento não tenho acesso a essa informação. Posso encaminhar seu atendimento para nossa equipe.\"\n\n## SITUAÇÕES MÉDICAS\n\nNunca realize diagnósticos.\n\nSe o paciente relatar sintomas, dores ou emergências:\n\n\"Entendo sua situação. Por segurança, não posso fornecer diagnósticos médicos. Recomendo que entre em contato diretamente com um profissional da clínica para avaliação adequada.\"\n\n## FALLBACK\n\nCaso não compreenda a solicitação:\n\n\"Desculpe, não consegui entender sua solicitação. Poderia reformular sua mensagem? Caso prefira, posso encaminhá-lo para nossa equipe de atendimento.\"\n\n## LGPD E PRIVACIDADE\n\n* Não solicite informações desnecessárias.\n* Não compartilhe dados de outros pacientes.\n* Não exponha informações internas da clínica.\n* Utilize apenas os dados necessários para o atendimento.\n\n## TOM DE COMUNICAÇÃO\n\nSempre mantenha:\n\n* Educação\n* Clareza\n* Profissionalismo\n* Respostas curtas e objetivas\n\nO objetivo principal é proporcionar um atendimento rápido, seguro e eficiente, auxiliando o paciente e automatizando processos da clínica odontológica.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e48b8248-018f-4846-9496-addb52a883b1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LWUmVoamwAAf_shYijWDcxaDkuXO4dwVBQa1xsV7edU",
+          "mode": "list",
+          "cachedResultName": "Planilha_Clinica_Odontologica",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LWUmVoamwAAf_shYijWDcxaDkuXO4dwVBQa1xsV7edU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 310213035,
+          "mode": "list",
+          "cachedResultName": "financeiro",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LWUmVoamwAAf_shYijWDcxaDkuXO4dwVBQa1xsV7edU/edit#gid=310213035"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        192
+      ],
+      "id": "5f1d7233-f767-4707-99ae-60b3e973e876",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5u5ssiXBHRWRgTn1",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d787139b-32d2-40d5-a4cd-e6a8bff17049",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -272,
+        -80
+      ],
+      "id": "fc9ad27e-9a4e-4632-8051-7d738352016e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "944344e5-3a98-44af-8310-748b44ba13cd",
+              "name": "texto",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        -96
+      ],
+      "id": "8acc51e4-756e-400b-8236-2c7963b9248e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        128
+      ],
+      "id": "62564641-82a5-4047-bd18-b2790cb70d7a",
+      "name": "Get a file",
+      "webhookId": "1aaaf873-df05-4c0d-beb5-001b9147c6f3",
+      "credentials": {
+        "telegramApi": {
+          "id": "KUh1vTRjfDeZkOFt",
+          "name": "IA2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        128
+      ],
+      "id": "253240af-42dc-46cf-aadc-af562ace83b7",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nKpdGhVvUSreCmsk",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "944344e5-3a98-44af-8310-748b44ba13cd",
+              "name": "texto",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        80
+      ],
+      "id": "97a686c5-4194-42eb-a205-d9805dd2ad37",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3d2b36e1-af6a-4699-b298-e290dbe19a1f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5eaaa0c5a67f9f8dabf884703d839c637b71d822772b14bddeb2b43f0b873096"
+  },
+  "id": "rlFxVGwJYD9ydoZg",
+  "tags": []
+}
