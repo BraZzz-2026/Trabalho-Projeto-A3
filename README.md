@@ -53,23 +53,37 @@ O agente é capaz de:
 Fluxo principal:
 
 Telegram
+
 ↓
+
 Recepção da Mensagem
+
 ↓
+
 Transcrição de Áudio (quando necessário)
+
 ↓
+
 Agente de IA (Gemini)
+
 ↓
+
 Consulta Google Sheets
+
 ↓
+
 Ação:
 - Consultar
 - Agendar
 - Cancelar
 - Encaminhar Humano
+
 ↓
+
 Resposta ao Cliente
+
 ↓
+
 Encaminha para Atendente
 ---
 
