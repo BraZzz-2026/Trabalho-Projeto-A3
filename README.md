@@ -85,6 +85,7 @@ Resposta ao Cliente
 ↓
 
 Encaminha para Atendente
+
 ---
 
 # Funcionalidades Demonstradas
