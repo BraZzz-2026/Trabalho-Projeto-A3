@@ -5,10 +5,9 @@
 
 Integrantes:
 - Braz Moura 
-- Nome 2
-- Nome 3
-- Nome 4
-- Nome 5
+- Thales Paulo 
+- Antonio Thiago 
+- Eloisa Maria 
 
 ---
 
