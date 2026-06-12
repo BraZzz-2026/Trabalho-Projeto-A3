@@ -1,0 +1,655 @@
+{
+  "name": "Exploração Digital e Fundamentos Tecnologicos",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d787139b-32d2-40d5-a4cd-e6a8bff17049",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -624,
+        336
+      ],
+      "id": "c47ad014-0e96-4d81-95d7-89dea35c37a1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fd584cd1-ad95-4e82-88be-4728a2d1ad56",
+              "leftValue": "={{ $('Edit Campo2').item.json.acao }}",
+              "rightValue": "ATENDENTE",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        400,
+        384
+      ],
+      "id": "317942e9-3f6f-452c-bd63-adfb88751148",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -800,
+        320
+      ],
+      "id": "bdfcef24-2f1b-48ac-8318-891809d331c3",
+      "name": "Gatilho Telegr",
+      "webhookId": "605e392a-2092-4679-8c2b-609c74669981",
+      "credentials": {
+        "telegramApi": {
+          "id": "HDttKIosYchsxOAo",
+          "name": "Bot Clicina Odont"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Gatilho Telegr').item.json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -704,
+        544
+      ],
+      "id": "bae90eb0-1d4b-4227-8d4c-781f97853271",
+      "name": "Obter Arquivo",
+      "webhookId": "1aaaf873-df05-4c0d-beb5-001b9147c6f3",
+      "credentials": {
+        "telegramApi": {
+          "id": "HDttKIosYchsxOAo",
+          "name": "Bot Clicina Odont"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        544
+      ],
+      "id": "bd2f622c-490e-40f5-accf-42d1a1639de0",
+      "name": "Transcrever Audio",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vQexBxeXS16FUesf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "944344e5-3a98-44af-8310-748b44ba13cd",
+              "name": "texto",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -416,
+        384
+      ],
+      "id": "884eb979-c1c3-4784-8fdb-a444baae2c66",
+      "name": "Edit Campo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "944344e5-3a98-44af-8310-748b44ba13cd",
+              "name": "texto",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -416,
+        544
+      ],
+      "id": "2f24e41a-0839-41a3-a29c-63c1b83e52da",
+      "name": "Edit Campo1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "=Você é Sofia, assistente virtual da Clínica Odontológica Sorriso Feliz.\n\nVocê atende pacientes pelo Telegram de forma educada, clara e profissional.\n\nVocê pode:\n\n* Consultar consultas marcadas.\n* Informar horários disponíveis.\n* Agendar consultas.\n* Cancelar consultas.\n* Encaminhar para atendimento humano.\n\nVocê possui acesso a duas ferramentas do Google Sheets:\n\n1. Ferramenta de leitura da planilha.\n2. Ferramenta de atualização da planilha.\n\nSempre use a ferramenta de leitura antes de responder sobre:\n\n* horários disponíveis\n* consultas marcadas\n* agendamentos\n* cancelamentos\n\nPara atualizar uma consulta, utilize sempre o campo ID retornado pela ferramenta de leitura.\n\nNunca utilize o nome do paciente para atualizar registros.\n\nToda atualização deve ser feita utilizando o ID da linha encontrada.\n\nNunca invente horários, consultas ou dados de pacientes.\n\nNão use Markdown.\nNão use asteriscos.\nNão use negrito.\nNão use listas com \"*\".\nResponda apenas com texto simples.\n\nIMPORTANTE:\nSempre responda em JSON válido, sem markdown e sem texto fora do JSON.\n\nFormato obrigatório:\n\n{\n  \"acao\": \"CONSULTAR | AGENDAR | CANCELAR | ATENDENTE\",\n  \"mensagem_cliente\": \"\",\n  \"nome\": \"\",\n  \"telefone\": \"\",\n  \"motivo\": \"\"\n}\n\nUse ATENDENTE quando:\n- o paciente pedir ajuda\n- o paciente pedir remarcação\n- o paciente pedir para falar com humano\n- a solicitação não for entendida\n- houver reclamação\n- houver dor, urgência ou emergência\n\nExemplo:\n\nPaciente:\n\"Preciso de ajuda\"\n\nResposta:\n{\n  \"acao\": \"ATENDENTE\",\n  \"mensagem_cliente\": \"Sua solicitação será encaminhada para nossa equipe. Em breve um atendente entrará em contato.\",\n  \"nome\": \"\",\n  \"telefone\": \"\",\n  \"motivo\": \"Paciente solicitou ajuda\"\n}\n\nPaciente:\n\"Quero remarcar minha consulta\"\n\nResposta:\n{\n  \"acao\": \"ATENDENTE\",\n  \"mensagem_cliente\": \"Para remarcações, nossa equipe entrará em contato em breve.\",\n  \"nome\": \"\",\n  \"telefone\": \"\",\n  \"motivo\": \"Paciente solicitou remarcação\"\n}\n\n\n## REGRAS DE ATENDIMENTO\n\nSe o paciente perguntar sobre horários disponíveis:\n\n* Use a ferramenta de leitura.\n* Liste apenas horários com STATUS = Livre.\n\nSe o paciente perguntar se tem consulta marcada:\n\n* Use a ferramenta de leitura.\n* Procure pelo nome do paciente.\n* Responda com DATA e HORA se encontrar.\n* Se não encontrar, informe que não localizou consulta cadastrada.\n\nSe o paciente desejar agendar:\n\n1. Use primeiro a ferramenta de leitura.\n2. Encontre a linha com DATA e HORA solicitadas.\n3. Verifique se STATUS = Livre.\n4. Use a ferramenta de atualização para preencher:\n\n   * PACIENTE = nome informado\n   * TELEFONE = telefone informado\n   * STATUS = Agendado\n5. Só depois responda confirmando o agendamento.\n\nSe o paciente desejar cancelar:\n\n1. Use primeiro a ferramenta de leitura.\n2. Encontre a consulta pelo nome do paciente.\n3. Use a ferramenta de atualização para preencher:\n\n   * PACIENTE = vazio\n   * TELEFONE = vazio\n   * STATUS = Livre\n4. Só depois responda confirmando o cancelamento.\n\nSe o paciente desejar remarcar:\n\n* Não altere a planilha.\n* Responda que a remarcação será encaminhada para um atendente.\n\nSe a solicitação não for compreendida:\n\n* Encaminhe para um atendente.\n\nQuando o paciente pedir remarcação, falar com humano, emergência ou quando você não entender a solicitação:\n\n1. Responda ao paciente:\n\"Sua solicitação será encaminhada para nossa equipe. Em breve um atendente entrará em contato.\"\n\n2. Marque a ação como ATENDENTE.\n\n3. Extraia, se possível:\n- nome do paciente\n- telefone do paciente\n- motivo do atendimento\n\n## REGRA OBRIGATÓRIA\n\nVocê só pode dizer que uma consulta foi agendada ou cancelada DEPOIS de usar com sucesso a ferramenta de atualização da planilha.\n\nSe a ferramenta de atualização falhar, responda:\n\n\"Não consegui concluir a alteração na agenda. Vou encaminhar sua solicitação para um atendente.\"\n\n## PRIVACIDADE\n\n* Não mostre dados de outros pacientes.\n* Não informe telefone de terceiros.\n* Use somente os dados necessários para o atendimento.\n\nResponda sempre em português do Brasil.\n\nPara cancelar uma consulta:\n\n1. Localize a consulta pelo nome do paciente utilizando a ferramenta de leitura.\n2. Obtenha o ID da linha encontrada.\n3. Utilize o ID para realizar a atualização.\n\nREGRA FINAL\n\nToda resposta deve obrigatoriamente seguir este formato JSON:\n\n{\n  \"acao\": \"\",\n  \"mensagem_cliente\": \"\",\n  \"nome\": \"\",\n  \"telefone\": \"\",\n  \"motivo\": \"\"\n}\n\nNão escreva nenhum texto fora do JSON.\n\nNão utilize markdown.\n\nNão utilize blocos de código.\n\nNão utilize explicações.\n\nRetorne apenas JSON válido.\n\nSe houver qualquer dúvida sobre qual ação executar, utilize ATENDENTE.\n\nNunca deixe o campo \"acao\" vazio.\n\nToda resposta deve conter obrigatoriamente um valor válido para \"acao\".\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -208,
+        384
+      ],
+      "id": "bc067e69-10bc-4866-8b71-7bb3f50e068e",
+      "name": "Agente IA"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Atualizar a agenda da clínica.\n\nPara agendar: preencher PACIENTE, TELEFONE e STATUS=Agendado em um horário livre.\n\nPara cancelar uma consulta:\n\nID = id encontrado na consulta\nPACIENTE = \"\"\nTELEFONE = \"\"\nSTATUS = \"Livre\"\n\nNunca reutilize o valor PACIENTE_using_to_match para atualizar a coluna PACIENTE.\n\nUse esta ferramenta apenas quando o cliente solicitar agendamento ou cancelamento.",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1LWUmVoamwAAf_shYijWDcxaDkuXO4dwVBQa1xsV7edU",
+          "mode": "list",
+          "cachedResultName": "Planilha_Clinica_Odontologica_Sorriso_Feliz",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LWUmVoamwAAf_shYijWDcxaDkuXO4dwVBQa1xsV7edU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 310213035,
+          "mode": "list",
+          "cachedResultName": "financeiro",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LWUmVoamwAAf_shYijWDcxaDkuXO4dwVBQa1xsV7edU/edit#gid=310213035"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "PACIENTE": "={{ $fromAI('PACIENTE__using_to_match_', ``, 'string') }}",
+            "TELEFONE": "={{ $fromAI('TELEFONE', ``, 'string') }}",
+            "STATUS": "={{ $fromAI('STATUS', ``, 'string') }}",
+            "ID": "={{ $fromAI('ID__using_to_match_', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DATA ",
+              "displayName": "DATA ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "HORA",
+              "displayName": "HORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PACIENTE",
+              "displayName": "PACIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TELEFONE",
+              "displayName": "TELEFONE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        32,
+        592
+      ],
+      "id": "ce2c9ce0-4cae-4f7b-a34c-e9964ca163e1",
+      "name": "Atualizar Linha",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vvcQ1dby7gxos3HK",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consultar horários disponíveis e consultas da clínica.\n\nRetorna linhas da planilha contendo DATA, HORA, PACIENTE, TELEFONE e STATUS.\n\nUse esta ferramenta quando o cliente perguntar sobre horários disponíveis, consultas marcadas ou disponibilidade.",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1LWUmVoamwAAf_shYijWDcxaDkuXO4dwVBQa1xsV7edU/edit?gid=310213035#gid=310213035",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 310213035,
+          "mode": "list",
+          "cachedResultName": "financeiro",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LWUmVoamwAAf_shYijWDcxaDkuXO4dwVBQa1xsV7edU/edit#gid=310213035"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        592
+      ],
+      "id": "a204016c-77fe-4ef1-9978-8abbec0693bd",
+      "name": "Ler Linha",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vvcQ1dby7gxos3HK",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        384
+      ],
+      "id": "a7d39890-2a64-493c-987f-9f1bf9a3122f",
+      "name": "Edit Campo2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Gatilho Telegr').item.json.message.chat.id }}",
+        "text": "={{ $json.mensagem_cliente }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        256,
+        384
+      ],
+      "id": "76b82223-c1d3-4944-9600-a1bfaace48a4",
+      "name": "Enviar MSG Cliente",
+      "webhookId": "aaec96c9-2e6d-4339-b6b6-f822b33ca442",
+      "credentials": {
+        "telegramApi": {
+          "id": "HDttKIosYchsxOAo",
+          "name": "Bot Clicina Odont"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Gatilho Telegr').item.json.message.from.id }}",
+        "text": "=🚨 Atendimento humano solicitado\n\nPaciente:  {{ $('Edit Campo2').item.json.nome }}\nTelefone:  {{ $('Edit Campo2').item.json.telefone }}\nMotivo:  {{ $('Edit Campo2').item.json.motivo }} \n\nEntrar em contato com o paciente.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        592,
+        304
+      ],
+      "id": "f30c999c-abde-4d0a-8d79-a0a55f66b057",
+      "name": "Enviar MSG Recepção",
+      "webhookId": "bcc7e74d-fc81-4f5f-88cf-153219bbcfa5",
+      "credentials": {
+        "telegramApi": {
+          "id": "veG7Ib7twOLZ9GvP",
+          "name": "Recpçao Odonto"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        592,
+        464
+      ],
+      "id": "78c8ee6a-0e8f-4f7d-ad8f-8765aab60e07",
+      "name": "Fazer Nada"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        560
+      ],
+      "id": "c5519f6a-b8d1-452f-a5d8-726429ae3865",
+      "name": "Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "EA1AAOs9jsZA6mzu",
+          "name": "Google Gemini(PaLM) Api account 22222"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Gatilho Telegr').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -112,
+        560
+      ],
+      "id": "b1b8641f-0330-4196-9ae7-8a0142a11721",
+      "name": "Memoria"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Campo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Obter Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Enviar MSG Recepção",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fazer Nada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gatilho Telegr": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obter Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Transcrever Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcrever Audio": {
+      "main": [
+        [
+          {
+            "node": "Edit Campo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Campo": {
+      "main": [
+        [
+          {
+            "node": "Agente IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Campo1": {
+      "main": [
+        [
+          {
+            "node": "Agente IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente IA": {
+      "main": [
+        [
+          {
+            "node": "Edit Campo2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Linha": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Linha": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Campo2": {
+      "main": [
+        [
+          {
+            "node": "Enviar MSG Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar MSG Cliente": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente IA",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente IA",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6f4749bb-8bb7-4616-b785-e2b6d529d22a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "935a06fd3612c5816102ca3fd8f3c55b70070dfc417baf37fc7de3786bf80f9e"
+  },
+  "nodeGroups": [],
+  "id": "EamHhAHfbUua9uJp",
+  "tags": []
+}
