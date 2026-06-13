@@ -131,7 +131,7 @@ O agente informa que um atendente entrará em contato e envia uma notificação 
 2. Clique em Import Workflow.
 3. Selecione o arquivo:
 
-workflow_clinica_odontologica.json
+Exploração Digital - Final.json
 
 4. Configure as credenciais necessárias.
 5. Salve o workflow.
