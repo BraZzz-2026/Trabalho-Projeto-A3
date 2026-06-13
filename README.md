@@ -142,9 +142,10 @@ Exploração Digital - Final.json
 # Como Executar
 
 1. Inicie o workflow no n8n.
-2. Certifique-se de que o bot do Telegram está ativo.
-3. Envie uma mensagem para o bot.
-4. O agente processará automaticamente a solicitação.
+2. Certifique-se de que o bot de entrada e saida do Telegram está ativo.
+3. Ative a Planilha ao nó 
+4. Envie uma mensagem para o bot.
+5. O agente processará automaticamente a solicitação.
 
 ---
 
